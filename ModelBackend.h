@@ -15,13 +15,13 @@ struct ExternalModelInputs {
 	double pollingPercentRepublican;
 	double mailinPercentDemocrat;
 	double mailinPercentRepublican;
-	double mailinPercentThirdParty;
+	double mailinPercentIndependent;
 	double mailinTurnout;
 	double earlyPercentDemocrat;
 	double earlyPercentRepublican;
-	double earlyPercentThirdParty;
+	double earlyPercentIndependent;
 	double earlyTurnout;
-	double adjustConstant;
+	double adjust;
 	double defectorsPercentDemocrat;
 	double defectorsPercentRepublican;
 	double independentPercentVotesRepublican;
@@ -50,6 +50,8 @@ struct InternalModelInputs {
 	double electiondayTotalShare;
 	double mailinTotalShare;
 	double earlyTotalShare;
+	double pollLean;
+	double adjust;
 
 	//Data
 	int lines;
