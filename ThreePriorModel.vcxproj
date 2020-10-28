@@ -152,11 +152,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ModelBackend.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreePriorModel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ModelBackend.cpp" />
     <ClCompile Include="ThreePriorModel.cpp" />
   </ItemGroup>
   <ItemGroup>

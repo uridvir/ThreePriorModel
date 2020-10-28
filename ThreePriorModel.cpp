@@ -4,6 +4,7 @@
 #include "framework.h"
 #include <commdlg.h>
 #include "ThreePriorModel.h"
+#include "ModelBackend.h"
 
 #define MAX_LOADSTRING 100
 
@@ -158,7 +159,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 					// Display the Open dialog box. 
-					if (GetOpenFileNameW(&ofn) == TRUE) {
+					if (GetOpenFileNameW(&ofn)) {
 						fileHandle = CreateFile(ofn.lpstrFile,
 							GENERIC_READ,
 							0,
@@ -166,6 +167,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 							OPEN_EXISTING,
 							FILE_ATTRIBUTE_NORMAL,
 							(HANDLE)NULL);
+						DWORD fileSize = GetFileSize(fileHandle, NULL);
+						DWORD bytesRead;
+						char* contents = new char[fileSize];
+						if (ReadFile(fileHandle, contents, fileSize, &bytesRead, NULL)) {
+							ExternalModelInputs inputsExt = parseCSV(std::string(contents));
+							//TODO: stuff
+						}
+						CloseHandle(fileHandle);
 					}
 				}
 				break;
@@ -192,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 					// Display the Open dialog box. 
-					if (GetSaveFileNameW(&ofn) == TRUE) {
+					if (GetSaveFileNameW(&ofn)) {
 						fileHandle = CreateFile(ofn.lpstrFile,
 							GENERIC_READ,
 							0,
