@@ -2,6 +2,7 @@
 //
 
 #include "framework.h"
+#include <commdlg.h>
 #include "ThreePriorModel.h"
 
 #define MAX_LOADSTRING 100
@@ -98,7 +99,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // Store instance handle in our global variable
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, 0, 640, 480, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
    {
@@ -134,9 +135,74 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
+			case IDM_OPEN:
+				{
+					OPENFILENAME ofn;        // common dialog box structure
+					WCHAR szFile[260];       // buffer for file name
+					HANDLE fileHandle; // file handle
+
+					// Initialize OPENFILENAME
+					ZeroMemory(&ofn, sizeof(ofn));
+					ofn.lStructSize = sizeof(ofn);
+					ofn.hwndOwner = hWnd;
+					ofn.lpstrFile = szFile;
+					// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+					// use the contents of szFile to initialize itself.
+					ofn.lpstrFile[0] = '\0';
+					ofn.nMaxFile = sizeof(szFile);
+					ofn.lpstrFilter = _T("Spreadsheets (*.csv)\0*.csv\0");
+					ofn.nFilterIndex = 1;
+					ofn.lpstrFileTitle = NULL;
+					ofn.nMaxFileTitle = 0;
+					ofn.lpstrInitialDir = NULL;
+					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+					// Display the Open dialog box. 
+					if (GetOpenFileNameW(&ofn) == TRUE) {
+						fileHandle = CreateFile(ofn.lpstrFile,
+							GENERIC_READ,
+							0,
+							(LPSECURITY_ATTRIBUTES)NULL,
+							OPEN_EXISTING,
+							FILE_ATTRIBUTE_NORMAL,
+							(HANDLE)NULL);
+					}
+				}
+				break;
+			case IDM_SAVE:
+				{
+					OPENFILENAME ofn;        // common dialog box structure
+					WCHAR szFile[260];       // buffer for file name
+					HANDLE fileHandle; // file handle
+
+					// Initialize OPENFILENAME
+					ZeroMemory(&ofn, sizeof(ofn));
+					ofn.lStructSize = sizeof(ofn);
+					ofn.hwndOwner = hWnd;
+					ofn.lpstrFile = szFile;
+					// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+					// use the contents of szFile to initialize itself.
+					ofn.lpstrFile[0] = '\0';
+					ofn.nMaxFile = sizeof(szFile);
+					ofn.lpstrFilter = _T("Spreadsheets (*.csv)\0*.csv\0");
+					ofn.nFilterIndex = 1;
+					ofn.lpstrFileTitle = NULL;
+					ofn.nMaxFileTitle = 0;
+					ofn.lpstrInitialDir = NULL;
+					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+					// Display the Open dialog box. 
+					if (GetSaveFileNameW(&ofn) == TRUE) {
+						fileHandle = CreateFile(ofn.lpstrFile,
+							GENERIC_READ,
+							0,
+							(LPSECURITY_ATTRIBUTES)NULL,
+							OPEN_EXISTING,
+							FILE_ATTRIBUTE_NORMAL,
+							(HANDLE)NULL);
+					}
+				}
+				break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
