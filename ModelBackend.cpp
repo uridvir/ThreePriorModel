@@ -97,7 +97,7 @@ ExternalModelInputs parseCSV(std::string contents) {
 /*
 Converts data to mathematically convenient format (normalize % to 1, convert numbers into shares, etc.)
 */
-InternalModelInputs processInputs(ExternalModelInputs inputsExt) {
+InternalModelInputs getInternals(ExternalModelInputs inputsExt) {
 	InternalModelInputs inputsInt = { 0 };
 
 	inputsInt.mailinPriorLean = (inputsExt.mailinPercentRepublican + inputsExt.mailinPercentIndependent * inputsExt.independentPercentVotesRepublican / 100.0)
@@ -108,7 +108,7 @@ InternalModelInputs processInputs(ExternalModelInputs inputsExt) {
 	inputsInt.mailinTotalShare = inputsExt.mailinTurnout / inputsExt.totalTurnout;
 	inputsInt.earlyTotalShare = inputsExt.earlyTurnout / inputsExt.totalTurnout;
 
-	inputsInt.pollLean = inputsExt.pollingPercentRepublican / (inputsExt.pollingPercentDemocrat + inputsExt.pollingPercentRepublican);
+	inputsInt.pollLean = inputsExt.pollingPercentRepublican / 100.0 + (100.0 - inputsExt.pollingPercentDemocrat - inputsExt.pollingPercentRepublican) / 200.0;
 	inputsInt.electiondayTotalShare = 1.0 - inputsInt.mailinTotalShare - inputsInt.earlyTotalShare;
 	
 	inputsInt.electiondayPriorLean = (inputsInt.pollLean - inputsInt.mailinPriorLean * inputsInt.mailinTotalShare
@@ -128,4 +128,6 @@ InternalModelInputs processInputs(ExternalModelInputs inputsExt) {
 		inputsInt.earlyLean.push_back(inputsExt.earlyRepublicanVotes[i] / (inputsExt.earlyRepublicanVotes[i] + inputsExt.earlyDemocratVotes[i]));
 		inputsInt.earlyShare.push_back((inputsExt.earlyDemocratVotes[i] + inputsExt.earlyRepublicanVotes[i] + inputsExt.earlyThirdPartyVotes[i]) / inputsExt.earlyTurnout);
 	}
+
+	return inputsInt;
 }
