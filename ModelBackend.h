@@ -64,4 +64,18 @@ struct InternalModelInputs {
 
 };
 
+struct ModelOutputs {
+	int lines;
+	std::vector<double> shareReported;
+	std::vector<double> leanReported;
+	std::vector<double> projection;
+	double pollLean;
+};
+
 ExternalModelInputs parseCSV(std::string contents);
+
+InternalModelInputs getInternals(ExternalModelInputs inputsExt);
+
+ModelOutputs runModel(InternalModelInputs inputs);
+
+std::string exportCSV(ModelOutputs outputs);

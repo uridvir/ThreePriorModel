@@ -90,6 +90,15 @@ ExternalModelInputs parseCSV(std::string contents) {
 			break;
 		}
 		currentLine++;
+		if (sstream.fail()) {
+			for (auto arr : { inputsExt.electiondayDemocratVotes, inputsExt.electiondayRepublicanVotes, inputsExt.electiondayThirdPartyVotes,
+				inputsExt.mailinDemocratVotes, inputsExt.mailinRepublicanVotes, inputsExt.mailinThirdPartyVotes,
+				inputsExt.earlyDemocratVotes, inputsExt.earlyRepublicanVotes, inputsExt.earlyThirdPartyVotes }) {
+				arr.pop_back();
+			}
+			inputsExt.lines--;
+			break;
+		}
 	}
 	return inputsExt;
 }
@@ -130,4 +139,59 @@ InternalModelInputs getInternals(ExternalModelInputs inputsExt) {
 	}
 
 	return inputsInt;
+}
+
+double getProjection(double priorLean, double lean, double share, double adjust) {
+	double newPriorLean = (priorLean - adjust * lean * share) / (1 - adjust * share);
+	double newPriorShare = 1 - share;
+	if (newPriorLean < 0) {
+		newPriorShare *= 1 + newPriorLean;
+		newPriorLean = 0;
+	}
+	else if (newPriorLean > 1) {
+		newPriorShare *= 2 - newPriorLean;
+		newPriorLean = 1;
+	}
+	return newPriorLean * newPriorShare + lean * (1 - newPriorShare);
+}
+
+ModelOutputs runModel(InternalModelInputs inputs) {
+	ModelOutputs outputs = { 0 };
+	outputs.lines = inputs.lines;
+	outputs.pollLean = inputs.pollLean;
+
+	for (int i = 0; i < inputs.lines; i++) {
+		outputs.shareReported.push_back(inputs.electiondayShare[i] * inputs.electiondayTotalShare + inputs.mailinShare[i] * inputs.mailinTotalShare
+			+ inputs.earlyShare[i] * inputs.earlyTotalShare);
+		if (outputs.shareReported[i] != 0) {
+			outputs.leanReported.push_back((inputs.electiondayLean[i] * inputs.electiondayShare[i] * inputs.electiondayTotalShare 
+				+ inputs.mailinLean[i] * inputs.mailinShare[i] * inputs.mailinTotalShare
+				+ inputs.earlyLean[i] * inputs.earlyShare[i] * inputs.earlyTotalShare) / outputs.shareReported[i]);
+		}
+		else {
+			outputs.leanReported.push_back(0.5);
+		}
+		outputs.projection.push_back(
+			getProjection(inputs.electiondayPriorLean, inputs.electiondayLean[i], inputs.electiondayShare[i], inputs.adjust) * inputs.electiondayTotalShare +
+			getProjection(inputs.mailinPriorLean, inputs.mailinLean[i], inputs.mailinShare[i], inputs.adjust) * inputs.mailinTotalShare +
+			getProjection(inputs.earlyPriorLean, inputs.earlyLean[i], inputs.earlyShare[i], inputs.adjust) * inputs.earlyTotalShare
+		);
+	}
+
+	return outputs;
+}
+
+std::string exportCSV(ModelOutputs outputs) {
+	std::ostringstream sstream;
+	sstream << "Share %,Lean % R,Projection % R,Polls % R\n";
+
+	for (int i = 0; i < outputs.lines; i++) {
+		sstream << outputs.shareReported[i] << ",";
+		sstream << outputs.leanReported[i] << ",";
+		sstream << outputs.projection[i] << ",";
+		sstream << outputs.pollLean << "\n";
+	}
+	
+	std::string str = sstream.str();
+	return str.substr(0, str.length() - 1);
 }

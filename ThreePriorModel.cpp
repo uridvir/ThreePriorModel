@@ -12,6 +12,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+std::string outputContents;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -171,8 +172,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						DWORD bytesRead;
 						char* contents = new char[fileSize];
 						if (ReadFile(fileHandle, contents, fileSize, &bytesRead, NULL)) {
-							ExternalModelInputs inputsExt = parseCSV(std::string(contents));
-							//TODO: stuff
+							outputContents = exportCSV(runModel(getInternals(parseCSV(std::string(contents)))));
 						}
 						CloseHandle(fileHandle);
 					}
@@ -180,6 +180,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDM_SAVE:
 				{
+					if (outputContents == "") {
+						MessageBoxA(hWnd, "Cannot export projection without input data. Select input data then try again.", "Error", MB_OK | MB_ICONERROR);
+						break;
+					}
+
 					OPENFILENAME ofn;        // common dialog box structure
 					WCHAR szFile[260];       // buffer for file name
 					HANDLE fileHandle; // file handle
@@ -200,15 +205,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ofn.lpstrInitialDir = NULL;
 					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
-					// Display the Open dialog box. 
+					// Display the Save dialog box. 
 					if (GetSaveFileNameW(&ofn)) {
-						fileHandle = CreateFile(ofn.lpstrFile,
-							GENERIC_READ,
+						fileHandle = CreateFile(std::wstring(ofn.lpstrFile).append(_T(".csv")).c_str(),
+							GENERIC_WRITE,
 							0,
 							(LPSECURITY_ATTRIBUTES)NULL,
-							OPEN_EXISTING,
+							CREATE_ALWAYS,
 							FILE_ATTRIBUTE_NORMAL,
 							(HANDLE)NULL);
+						DWORD bytesWritten;
+						WriteFile(fileHandle, outputContents.c_str(), outputContents.length(), &bytesWritten, NULL);
+						CloseHandle(fileHandle);
 					}
 				}
 				break;
