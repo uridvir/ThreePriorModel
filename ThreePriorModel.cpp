@@ -172,7 +172,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						DWORD bytesRead;
 						char* contents = new char[fileSize];
 						if (ReadFile(fileHandle, contents, fileSize, &bytesRead, NULL)) {
-							outputContents = exportCSV(runModel(getInternals(parseCSV(std::string(contents)))));
+							try {
+								outputContents = exportCSV(runModel(getInternals(parseCSV(std::string(contents)))));
+							}
+							catch (std::logic_error e) {
+								MessageBoxA(hWnd, e.what(), "Error", MB_OK | MB_ICONERROR);
+								outputContents = "";
+							}
 						}
 						CloseHandle(fileHandle);
 					}
