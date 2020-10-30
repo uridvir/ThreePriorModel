@@ -103,6 +103,7 @@ ExternalModelInputs parseCSV(std::string contents) {
 	return inputsExt;
 }
 
+//TODO: Add divide-by-zero protection
 /*
 Converts data to mathematically convenient format (normalize % to 1, convert numbers into shares, etc.)
 */

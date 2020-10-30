@@ -204,10 +204,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					ofn.nMaxFileTitle = 0;
 					ofn.lpstrInitialDir = NULL;
 					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+					ofn.lpstrDefExt = _T(".csv");
 
 					// Display the Save dialog box. 
 					if (GetSaveFileNameW(&ofn)) {
-						fileHandle = CreateFile(std::wstring(ofn.lpstrFile).append(_T(".csv")).c_str(),
+						fileHandle = CreateFile(ofn.lpstrFile,
 							GENERIC_WRITE,
 							0,
 							(LPSECURITY_ATTRIBUTES)NULL,
