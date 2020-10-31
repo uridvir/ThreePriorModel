@@ -27,15 +27,9 @@
     <ClInclude Include="ThreePriorModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ModelBackend.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ThreePriorModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelBackend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

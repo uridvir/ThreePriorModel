@@ -3,12 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29318.209
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3prior", "3prior\3prior.vcxproj", "{12E9E784-0DF5-4D22-BA06-0812F9860BB0}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreePriorModel", "ThreePriorModel\ThreePriorModel.vcxproj", "{72717975-E915-4C4F-830E-A9D5CDF06D47}"
-	ProjectSection(ProjectDependencies) = postProject
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0} = {12E9E784-0DF5-4D22-BA06-0812F9860BB0}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreePriorModel", "ThreePriorModel.vcxproj", "{72717975-E915-4C4F-830E-A9D5CDF06D47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,14 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Debug|x64.ActiveCfg = Debug|x64
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Debug|x64.Build.0 = Debug|x64
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Debug|x86.ActiveCfg = Debug|Win32
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Debug|x86.Build.0 = Debug|Win32
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Release|x64.ActiveCfg = Release|x64
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Release|x64.Build.0 = Release|x64
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Release|x86.ActiveCfg = Release|Win32
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0}.Release|x86.Build.0 = Release|Win32
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Debug|x64.ActiveCfg = Debug|x64
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Debug|x64.Build.0 = Debug|x64
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Debug|x86.ActiveCfg = Debug|Win32
