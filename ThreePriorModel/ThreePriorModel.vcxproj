@@ -106,7 +106,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../3prior;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../ModelBackend;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +166,11 @@
   <ItemGroup>
     <Image Include="small.ico" />
     <Image Include="ThreePriorModel.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ModelBackend\ModelBackend.vcxproj">
+      <Project>{ca0dd6cd-513d-4bd1-be2d-f8403237e150}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

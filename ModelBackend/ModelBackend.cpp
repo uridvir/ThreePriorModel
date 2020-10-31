@@ -1,3 +1,8 @@
+// ModelBackend.cpp : Defines the functions for the static library.
+//
+
+#include "pch.h"
+#include "framework.h"
 #include "ModelBackend.h"
 #undef max //Disables annoying max macro
 
@@ -127,7 +132,7 @@ InternalModelInputs getInternals(ExternalModelInputs inputsExt) {
 
 	inputsInt.pollLean = inputsExt.pollingPercentRepublican / 100.0 + (100.0 - inputsExt.pollingPercentDemocrat - inputsExt.pollingPercentRepublican) / 200.0;
 	inputsInt.electiondayTotalShare = 1.0 - inputsInt.mailinTotalShare - inputsInt.earlyTotalShare;
-	
+
 	inputsInt.electiondayPriorLean = (inputsInt.pollLean - inputsInt.mailinPriorLean * inputsInt.mailinTotalShare
 		- inputsInt.earlyPriorLean * inputsInt.earlyTotalShare) / inputsInt.electiondayTotalShare;
 
@@ -148,7 +153,7 @@ InternalModelInputs getInternals(ExternalModelInputs inputsExt) {
 		else {
 			inputsInt.electiondayLean.push_back(inputsExt.electiondayRepublicanVotes[i] / (inputsExt.electiondayRepublicanVotes[i] + inputsExt.electiondayDemocratVotes[i]));
 		}
-		
+
 		//Don't need to check if election day turnout is 0, that would have already triggered an error
 		inputsInt.electiondayShare.push_back((inputsExt.electiondayDemocratVotes[i] + inputsExt.electiondayRepublicanVotes[i] + inputsExt.electiondayThirdPartyVotes[i])
 			/ (inputsInt.electiondayTotalShare * inputsExt.totalTurnout));
@@ -250,7 +255,7 @@ std::string exportCSV(ModelOutputs outputs) {
 		sstream << outputs.projection[i] << ",";
 		sstream << outputs.pollLean << "\n";
 	}
-	
+
 	std::string str = sstream.str();
 	return str.substr(0, str.length() - 1);
 }

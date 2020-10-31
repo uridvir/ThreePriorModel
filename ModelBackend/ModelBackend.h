@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -42,7 +43,7 @@ struct ExternalModelInputs {
 };
 
 struct InternalModelInputs {
-	
+
 	//Priors
 	double electiondayPriorLean;
 	double mailinPriorLean;

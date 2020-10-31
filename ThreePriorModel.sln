@@ -6,9 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3prior", "3prior\3prior.vcxproj", "{12E9E784-0DF5-4D22-BA06-0812F9860BB0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ThreePriorModel", "ThreePriorModel\ThreePriorModel.vcxproj", "{72717975-E915-4C4F-830E-A9D5CDF06D47}"
-	ProjectSection(ProjectDependencies) = postProject
-		{12E9E784-0DF5-4D22-BA06-0812F9860BB0} = {12E9E784-0DF5-4D22-BA06-0812F9860BB0}
-	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelBackend", "ModelBackend\ModelBackend.vcxproj", "{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +33,14 @@ Global
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Release|x64.Build.0 = Release|x64
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Release|x86.ActiveCfg = Release|Win32
 		{72717975-E915-4C4F-830E-A9D5CDF06D47}.Release|x86.Build.0 = Release|Win32
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Debug|x64.ActiveCfg = Debug|x64
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Debug|x64.Build.0 = Debug|x64
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Debug|x86.ActiveCfg = Debug|Win32
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Debug|x86.Build.0 = Debug|Win32
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Release|x64.ActiveCfg = Release|x64
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Release|x64.Build.0 = Release|x64
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Release|x86.ActiveCfg = Release|Win32
+		{CA0DD6CD-513D-4BD1-BE2D-F8403237E150}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
