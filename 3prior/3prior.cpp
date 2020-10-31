@@ -3,11 +3,82 @@
 
 #include <iostream>
 #include "ModelBackend.h"
+#include <fstream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
-	exportCSV(runModel(getInternals(parseCSV(std::string("")))));
+int main(int argc, char* argv[])
+{	
+	if (argc == 2 && std::strcmp(argv[1], "--help") == 0) {
+		std::cout << "To run the model:\n";
+		std::cout << "3prior <input> <output>\n\n";
+
+		std::cout << "<input>    - CSV file with prior inputs and election results\n";
+		std::cout << "<output>   - CSV file for projections\n\n\n";
+
+
+		std::cout << "To download an input template:\n";
+		std::cout << "3prior -t [template]\n\n";
+
+		std::cout << "[template] - CSV input template for priors and election results, by default \"template.csv\"\n";
+		return 0;
+	}
+
+	if ((argc == 2 || argc == 3) && std::strcmp(argv[1], "-t") == 0) { //Template download mode
+		std::ofstream out;
+		try {
+			if (argc == 2) {
+				out.open("template.csv", std::ios::trunc);
+			}
+			else {
+				out.open(argv[2], std::ios::trunc);
+			}
+			//TODO: Write template to file
+			out.close();
+		}
+		catch (std::exception e) {
+			std::cout << "File output error!\n";
+			std::cout << e.what() << "\n";
+		}
+		return 0;
+	}
+
+	if (argc != 3) { //Bad usage
+		std::cout << "For correct usage, type \"3prior --help\".\n";
+		return 0;
+	}
+	else { //Run the model
+		std::stringstream buff;
+		std::ifstream in;
+		try {
+			in.open(argv[1]);
+			buff << in.rdbuf();
+			in.close();
+		}
+		catch (std::exception e) {
+			std::cout << "File input error!\n";
+			std::cout << e.what() << "\n";
+			return 0;
+		}
+		std::string csvOut;
+		try {
+			csvOut = exportCSV(runModel(getInternals(parseCSV(buff.str()))));
+		}
+		catch (std::logic_error e) { //Catch exceptions thrown explicitly by the model
+			std::cout << "Model error:\n";
+			std::cout << e.what() << "\n";
+			return 0;
+		}
+		std::ofstream out;
+		try {
+			out.open(argv[2], std::ios::trunc);
+			out << csvOut;
+			out.close();
+		}
+		catch (std::exception e) {
+			std::cout << "File output error!\n";
+			std::cout << e.what() << "\n";
+			return 0;
+		}
+	}
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
