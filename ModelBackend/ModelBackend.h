@@ -80,3 +80,5 @@ InternalModelInputs getInternals(ExternalModelInputs inputsExt);
 ModelOutputs runModel(InternalModelInputs inputs);
 
 std::string exportCSV(ModelOutputs outputs);
+
+std::string templateText();

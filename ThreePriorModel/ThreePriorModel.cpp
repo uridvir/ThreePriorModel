@@ -13,6 +13,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 std::string outputContents;
+const char* versionText = "1.0";
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -76,12 +77,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
-    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_THREEPRIORMODEL));
+    wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_BLUETEXAS));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_THREEPRIORMODEL);
     wcex.lpszClassName  = szWindowClass;
-    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_BLUETEXAS));
 
     return RegisterClassExW(&wcex);
 }
@@ -135,7 +136,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (wmId)
             {
             case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				{
+					std::string aboutMessage = std::string("ThreePriorModel, Version ") + versionText + "\n"
+						+ "Created by Uri Dvir, icon based on https://commons.wikimedia.org/wiki/File:Texas_flag_map.svg";
+					MessageBoxA(hWnd, aboutMessage.c_str(), "About ThreePriorModel", MB_OK);
+				}
                 break;
 			case IDM_OPEN:
 				{
@@ -227,6 +232,44 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					}
 				}
 				break;
+			case IDM_TEMPLATE:
+				{
+					OPENFILENAME ofn;        // common dialog box structure
+					WCHAR szFile[260];       // buffer for file name
+					HANDLE fileHandle; // file handle
+
+					// Initialize OPENFILENAME
+					ZeroMemory(&ofn, sizeof(ofn));
+					ofn.lStructSize = sizeof(ofn);
+					ofn.hwndOwner = hWnd;
+					ofn.lpstrFile = szFile;
+					// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+					// use the contents of szFile to initialize itself.
+					ofn.lpstrFile[0] = '\0';
+					ofn.nMaxFile = sizeof(szFile);
+					ofn.lpstrFilter = _T("Spreadsheets (*.csv)\0*.csv\0");
+					ofn.nFilterIndex = 1;
+					ofn.lpstrFileTitle = NULL;
+					ofn.nMaxFileTitle = 0;
+					ofn.lpstrInitialDir = NULL;
+					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+					ofn.lpstrDefExt = _T(".csv");
+
+					// Display the Save dialog box. 
+					if (GetSaveFileNameW(&ofn)) {
+						fileHandle = CreateFile(ofn.lpstrFile,
+							GENERIC_WRITE,
+							0,
+							(LPSECURITY_ATTRIBUTES)NULL,
+							CREATE_ALWAYS,
+							FILE_ATTRIBUTE_NORMAL,
+							(HANDLE)NULL);
+						DWORD bytesWritten;
+						std::string templateContents = templateText();
+						WriteFile(fileHandle, templateContents.c_str(), templateContents.length(), &bytesWritten, NULL);
+						CloseHandle(fileHandle);
+					}
+				}
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }

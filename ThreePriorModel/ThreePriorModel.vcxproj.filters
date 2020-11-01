@@ -39,10 +39,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="ThreePriorModel.ico">
+    <Image Include="blue_texas.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -259,3 +259,19 @@ std::string exportCSV(ModelOutputs outputs) {
 	std::string str = sstream.str();
 	return str.substr(0, str.length() - 1);
 }
+
+std::string templateText() {
+	std::string text = "PRIORS,,,,,,,,\n";
+	text += "Polling % D, Polling% R, Mail - in % D, Mail - in % R, Mail - in % I, Mail - in turnout, , ,\n";
+	text += "0, 0, 0, 0, 0, 0, , ,\n";
+	text += ", , Early% D, Early% R, Early% I, Early turnout, , ,\n";
+	text += ", , 0, 0, 0, 0, , ,\n";
+	text += "Adjust constant, , Defectors% D, Defectors% R, Ind.% R, Total Turnout, , ,\n";
+	text += "0, , 0, 0, 0, 0, , ,\n";
+	text += ", , , , , , , ,\n";
+	text += "RESULTS, , , , , , , ,\n";
+	text += "Election - day D, Election - day R, Election - day 3, Mail - in D, Mail - in R, Mail - in 3, Early D, Early R, Early 3\n";
+	text += "0, 0, 0, 0, 0, 0, 0, 0, 0\n";
+	text += "0, 0, 0, 0, 0, 0, 0, 0, 0\n";
+	return text;
+}

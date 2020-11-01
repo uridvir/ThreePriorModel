@@ -143,6 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../ModelBackend</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -164,8 +165,7 @@
     <ResourceCompile Include="ThreePriorModel.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="small.ico" />
-    <Image Include="ThreePriorModel.ico" />
+    <Image Include="blue_texas.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModelBackend\ModelBackend.vcxproj">

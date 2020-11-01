@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
 			else {
 				out.open(argv[2], std::ios::trunc);
 			}
-			//TODO: Write template to file
+			out << templateText();
 			out.close();
 		}
 		catch (std::exception e) {
