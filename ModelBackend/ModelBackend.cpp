@@ -130,7 +130,8 @@ InternalModelInputs getInternals(ExternalModelInputs inputsExt) {
 			/ (inputsExt.earlyPercentDemocrat + inputsExt.earlyPercentRepublican + inputsExt.earlyPercentIndependent);
 	}
 
-	inputsInt.pollLean = inputsExt.pollingPercentRepublican / 100.0 + (100.0 - inputsExt.pollingPercentDemocrat - inputsExt.pollingPercentRepublican) / 200.0;
+	//v1.2 change - calculate share of 2-party vote, don't split 3rd party voters 50/50
+	inputsInt.pollLean = inputsExt.pollingPercentRepublican / (inputsExt.pollingPercentRepublican + inputsExt.pollingPercentDemocrat);
 	inputsInt.electiondayTotalShare = 1.0 - inputsInt.mailinTotalShare - inputsInt.earlyTotalShare;
 
 	inputsInt.electiondayPriorLean = (inputsInt.pollLean - inputsInt.mailinPriorLean * inputsInt.mailinTotalShare
