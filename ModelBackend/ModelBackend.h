@@ -67,17 +67,20 @@ struct InternalModelInputs {
 
 struct ModelOutputs {
 	int lines;
+
 	std::vector<double> shareReported;
 	std::vector<double> leanReported;
 	std::vector<double> projection;
 	double pollLean;
 };
 
+enum VotingMethod { ElectionDay, MailIn, Early, All };
+
 ExternalModelInputs parseCSV(std::string contents);
 
 InternalModelInputs getInternals(ExternalModelInputs inputsExt);
 
-ModelOutputs runModel(InternalModelInputs inputs);
+ModelOutputs runModel(InternalModelInputs inputs, VotingMethod method = All);
 
 std::string exportCSV(ModelOutputs outputs);
 

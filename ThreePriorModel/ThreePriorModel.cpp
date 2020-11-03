@@ -12,7 +12,7 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-std::string outputContents;
+InternalModelInputs modelInputs = { 0 };
 const char* versionText = "1.0";
 
 // Forward declarations of functions included in this code module:
@@ -20,6 +20,8 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+void saveDialog(HWND hWnd, VotingMethod method);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -178,11 +180,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						char* contents = new char[fileSize];
 						if (ReadFile(fileHandle, contents, fileSize, &bytesRead, NULL)) {
 							try {
-								outputContents = exportCSV(runModel(getInternals(parseCSV(std::string(contents)))));
+								modelInputs = getInternals(parseCSV(std::string(contents)));
 							}
 							catch (std::logic_error e) {
 								MessageBoxA(hWnd, e.what(), "Error", MB_OK | MB_ICONERROR);
-								outputContents = "";
 							}
 						}
 						CloseHandle(fileHandle);
@@ -190,47 +191,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			case IDM_SAVE:
-				{
-					if (outputContents == "") {
-						MessageBoxA(hWnd, "Cannot export projection without input data. Select input data then try again.", "Error", MB_OK | MB_ICONERROR);
-						break;
-					}
-
-					OPENFILENAME ofn;        // common dialog box structure
-					WCHAR szFile[260];       // buffer for file name
-					HANDLE fileHandle; // file handle
-
-					// Initialize OPENFILENAME
-					ZeroMemory(&ofn, sizeof(ofn));
-					ofn.lStructSize = sizeof(ofn);
-					ofn.hwndOwner = hWnd;
-					ofn.lpstrFile = szFile;
-					// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
-					// use the contents of szFile to initialize itself.
-					ofn.lpstrFile[0] = '\0';
-					ofn.nMaxFile = sizeof(szFile);
-					ofn.lpstrFilter = _T("Spreadsheets (*.csv)\0*.csv\0");
-					ofn.nFilterIndex = 1;
-					ofn.lpstrFileTitle = NULL;
-					ofn.nMaxFileTitle = 0;
-					ofn.lpstrInitialDir = NULL;
-					ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-					ofn.lpstrDefExt = _T(".csv");
-
-					// Display the Save dialog box. 
-					if (GetSaveFileNameW(&ofn)) {
-						fileHandle = CreateFile(ofn.lpstrFile,
-							GENERIC_WRITE,
-							0,
-							(LPSECURITY_ATTRIBUTES)NULL,
-							CREATE_ALWAYS,
-							FILE_ATTRIBUTE_NORMAL,
-							(HANDLE)NULL);
-						DWORD bytesWritten;
-						WriteFile(fileHandle, outputContents.c_str(), outputContents.length(), &bytesWritten, NULL);
-						CloseHandle(fileHandle);
-					}
-				}
+				saveDialog(hWnd, All);
+				break;
+			case IDM_SAVE_EDAY:
+				saveDialog(hWnd, ElectionDay);
+				break;
+			case IDM_SAVE_MAIL:
+				saveDialog(hWnd, MailIn);
+				break;
+			case IDM_SAVE_EARLY:
+				saveDialog(hWnd, Early);
 				break;
 			case IDM_TEMPLATE:
 				{
@@ -310,4 +280,47 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+void saveDialog(HWND hWnd, VotingMethod method) {
+	if (modelInputs.lines == 0) {
+		MessageBoxA(hWnd, "Cannot export projection without input data. Select input data then try again.", "Error", MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	OPENFILENAME ofn;        // common dialog box structure
+	WCHAR szFile[260];       // buffer for file name
+	HANDLE fileHandle; // file handle
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd;
+	ofn.lpstrFile = szFile;
+	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not 
+	// use the contents of szFile to initialize itself.
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = _T("Spreadsheets (*.csv)\0*.csv\0");
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	ofn.lpstrDefExt = _T(".csv");
+
+	// Display the Save dialog box. 
+	if (GetSaveFileNameW(&ofn)) {
+		fileHandle = CreateFile(ofn.lpstrFile,
+			GENERIC_WRITE,
+			0,
+			(LPSECURITY_ATTRIBUTES)NULL,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			(HANDLE)NULL);
+		DWORD bytesWritten;
+		std::string outputContents = exportCSV(runModel(modelInputs, method));
+		WriteFile(fileHandle, outputContents.c_str(), outputContents.length(), &bytesWritten, NULL);
+		CloseHandle(fileHandle);
+	}
 }

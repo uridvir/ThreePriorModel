@@ -212,31 +212,67 @@ double getProjection(double priorLean, double lean, double share, double adjust)
 		newPriorShare *= 2 - newPriorLean;
 		newPriorLean = 1;
 	}
+	newPriorShare = (newPriorShare < 0) ? 0 : newPriorShare;
 	return newPriorLean * newPriorShare + lean * (1 - newPriorShare);
 }
 
-ModelOutputs runModel(InternalModelInputs inputs) {
+ModelOutputs runModel(InternalModelInputs inputs, VotingMethod method) {
 	ModelOutputs outputs = { 0 };
 	outputs.lines = inputs.lines;
-	outputs.pollLean = inputs.pollLean * 100.0;
+	
+	switch (method) {
+	case All:
+		outputs.pollLean = inputs.pollLean * 100.0;
+		for (int i = 0; i < inputs.lines; i++) {
+			outputs.shareReported.push_back((inputs.electiondayShare[i] * inputs.electiondayTotalShare + inputs.mailinShare[i] * inputs.mailinTotalShare
+				+ inputs.earlyShare[i] * inputs.earlyTotalShare) * 100.0);
+			if (outputs.shareReported[i] == 0) {
+				outputs.leanReported.push_back(50);
+			}
+			else {
+				//Multiply by 10000 because shareReported is already normalized to 100
+				outputs.leanReported.push_back(10000.0 * (inputs.electiondayLean[i] * inputs.electiondayShare[i] * inputs.electiondayTotalShare
+					+ inputs.mailinLean[i] * inputs.mailinShare[i] * inputs.mailinTotalShare
+					+ inputs.earlyLean[i] * inputs.earlyShare[i] * inputs.earlyTotalShare) / outputs.shareReported[i]);
+			}
 
-	for (int i = 0; i < inputs.lines; i++) {
-		outputs.shareReported.push_back((inputs.electiondayShare[i] * inputs.electiondayTotalShare + inputs.mailinShare[i] * inputs.mailinTotalShare
-			+ inputs.earlyShare[i] * inputs.earlyTotalShare) * 100.0);
-		if (outputs.shareReported[i] == 0) {
-			outputs.leanReported.push_back(50);
+			//Corrected total shares will go up if turnout exceeds 100%
+			double electiondayCorrectedShare = inputs.electiondayTotalShare * (inputs.electiondayShare[i] > 1 ? inputs.electiondayShare[i] : 1);
+			double mailinCorrectedShare = inputs.mailinTotalShare * (inputs.mailinShare[i] > 1 ? inputs.mailinShare[i] : 1);
+			double earlyCorrectedShare = inputs.earlyTotalShare * (inputs.earlyShare[i] > 1 ? inputs.earlyShare[i] : 1);
+
+			outputs.projection.push_back((
+				getProjection(inputs.electiondayPriorLean, inputs.electiondayLean[i], inputs.electiondayShare[i], inputs.adjust) * electiondayCorrectedShare +
+				getProjection(inputs.mailinPriorLean, inputs.mailinLean[i], inputs.mailinShare[i], inputs.adjust) * mailinCorrectedShare +
+				getProjection(inputs.earlyPriorLean, inputs.earlyLean[i], inputs.earlyShare[i], inputs.adjust) * earlyCorrectedShare)
+				/ (electiondayCorrectedShare + mailinCorrectedShare + earlyCorrectedShare) * 100.0
+			);
 		}
-		else {
-			//Multiply by 10000 because shareReported is already normalized to 100
-			outputs.leanReported.push_back(10000.0 * (inputs.electiondayLean[i] * inputs.electiondayShare[i] * inputs.electiondayTotalShare
-				+ inputs.mailinLean[i] * inputs.mailinShare[i] * inputs.mailinTotalShare
-				+ inputs.earlyLean[i] * inputs.earlyShare[i] * inputs.earlyTotalShare) / outputs.shareReported[i]);
+		break;
+	case ElectionDay:
+		outputs.pollLean = inputs.electiondayPriorLean * 100.0;
+		for (int i = 0; i < inputs.lines; i++) {
+			outputs.shareReported.push_back(inputs.electiondayShare[i] * 100.0);
+			outputs.leanReported.push_back(inputs.electiondayLean[i] * 100.0);
+			outputs.projection.push_back(getProjection(inputs.electiondayPriorLean, inputs.electiondayLean[i], inputs.electiondayShare[i], inputs.adjust) * 100.0);
 		}
-		outputs.projection.push_back((
-			getProjection(inputs.electiondayPriorLean, inputs.electiondayLean[i], inputs.electiondayShare[i], inputs.adjust) * inputs.electiondayTotalShare +
-			getProjection(inputs.mailinPriorLean, inputs.mailinLean[i], inputs.mailinShare[i], inputs.adjust) * inputs.mailinTotalShare +
-			getProjection(inputs.earlyPriorLean, inputs.earlyLean[i], inputs.earlyShare[i], inputs.adjust) * inputs.earlyTotalShare) * 100.0
-		);
+		break;
+	case MailIn:
+		outputs.pollLean = inputs.mailinPriorLean * 100.0;
+		for (int i = 0; i < inputs.lines; i++) {
+			outputs.shareReported.push_back(inputs.mailinShare[i] * 100.0);
+			outputs.leanReported.push_back(inputs.mailinLean[i] * 100.0);
+			outputs.projection.push_back(getProjection(inputs.mailinPriorLean, inputs.mailinLean[i], inputs.mailinShare[i], inputs.adjust) * 100.0);
+		}
+		break;
+	case Early:
+		outputs.pollLean = inputs.earlyPriorLean * 100.0;
+		for (int i = 0; i < inputs.lines; i++) {
+			outputs.shareReported.push_back(inputs.earlyShare[i] * 100.0);
+			outputs.leanReported.push_back(inputs.earlyLean[i] * 100.0);
+			outputs.projection.push_back(getProjection(inputs.earlyPriorLean, inputs.earlyLean[i], inputs.earlyShare[i], inputs.adjust) * 100.0);
+		}
+		break;
 	}
 
 	return outputs;

@@ -46,6 +46,9 @@ BEGIN
     BEGIN
         MENUITEM "&Open input data",            IDM_OPEN
         MENUITEM "&Save projection",            IDM_SAVE
+        MENUITEM "Save election day projection", IDM_SAVE_EDAY
+        MENUITEM "Save mail-in projection",     IDM_SAVE_MAIL
+        MENUITEM "Save early in-person projection", IDM_SAVE_EARLY
         MENUITEM "Download &template",          IDM_TEMPLATE
     END
     POPUP "&Help"
